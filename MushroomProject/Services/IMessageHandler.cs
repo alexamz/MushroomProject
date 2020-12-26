@@ -1,7 +1,11 @@
-﻿namespace Services
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace Services
 {
     public interface IMessageHandler
     {
-        void Start();
+        Task StartAsync(CancellationToken stoppingToken);
+        void Stop(CancellationToken stoppingToken);
     }
 }

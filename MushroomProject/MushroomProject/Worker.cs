@@ -19,12 +19,19 @@ namespace MushroomProject
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
-            MessageHandler.Start();
+            await MessageHandler.StartAsync(cancellationToken);
+        }
+
+        public override Task StopAsync(CancellationToken cancellationToken)
+        {
+            MessageHandler.Stop(cancellationToken);
+            return base.StopAsync(cancellationToken);
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             throw new NotImplementedException();
         }
+
     }
 }
