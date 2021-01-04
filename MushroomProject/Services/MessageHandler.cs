@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization;
+﻿using Microsoft.Extensions.Logging;
+using MongoDB.Bson.Serialization;
 using Services;
 using Services.Database;
 using Services.Messages;
@@ -18,12 +19,15 @@ namespace Services
         private CancellationToken cancellationToken;
         private readonly WeatherService weatherService;
         private readonly AppSettingsConfiguration settings;
+        private readonly ILogger<MessageHandler> logger;
 
         public MessageHandler(WeatherService weatherService,
-            AppSettingsConfiguration settings)
+            AppSettingsConfiguration settings,
+            ILogger<MessageHandler> logger)
         {
             this.weatherService = weatherService;
             this.settings = settings;
+            this.logger = logger;
         }
 
         public async Task StartAsync(CancellationToken stoppingToken)
@@ -45,17 +49,23 @@ namespace Services
             {
                 try
                 {
-                    weatherService.Create(JsonSerializer.Deserialize<WeatherResponse>(GetWeatherData(uri).Result));
+                    Stopwatch sw = Stopwatch.StartNew();
+                    var json = GetWeatherData(uri).Result;
+                    logger.LogDebug($"Getting data from OpenWeatherMap took {sw.ElapsedMilliseconds}");
+                    logger.LogDebug(json);
+                    sw.Restart();
+                    weatherService.Create(JsonSerializer.Deserialize<WeatherResponse>(json));
+                    logger.LogDebug($"Storing in mongodb took {sw.ElapsedMilliseconds}");
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    logger.LogError(e.ToString());
                 }
                 await Task.Delay(TimeSpan.FromMinutes(minutes), cancellationToken);
             }
         }
 
-        private static async Task<string> GetWeatherData(string uri)
+        private async Task<string> GetWeatherData(string uri)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
@@ -68,7 +78,7 @@ namespace Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                logger.LogError(e.ToString());
             }
 
             return null;
