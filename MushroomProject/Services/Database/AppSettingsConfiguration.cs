@@ -9,6 +9,12 @@ namespace Services.Database
     public class AppSettingsConfiguration
     {
         public MushroomsDatabaseSettings MushroomsDatabaseSettings { get; set; }
+        public OpenWeatherMap OpenWeatherMap { get; set; }
+    }
+
+    public class OpenWeatherMap
+    {
+        public string ApiKey { get; set; }
     }
 
     public class MushroomsDatabaseSettings

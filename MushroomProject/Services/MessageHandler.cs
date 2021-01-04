@@ -17,16 +17,19 @@ namespace Services
     {
         private CancellationToken cancellationToken;
         private readonly WeatherService weatherService;
+        private readonly AppSettingsConfiguration settings;
 
-        public MessageHandler(WeatherService weatherService)
+        public MessageHandler(WeatherService weatherService,
+            AppSettingsConfiguration settings)
         {
             this.weatherService = weatherService;
+            this.settings = settings;
         }
 
         public async Task StartAsync(CancellationToken stoppingToken)
         {
             this.cancellationToken = stoppingToken;
-            string uri = $"https://api.openweathermap.org/data/2.5/weather?lat=41.609935&lon=2.029882&lang=es&appid=ca5dfdf34c56854aced66dbfc1e471b0";
+            string uri = $@"https://api.openweathermap.org/data/2.5/weather?lat=41.609935&lon=2.029882&lang=es&appid={settings.OpenWeatherMap.ApiKey}";
 
             await GetDataPeriodicallyAsync(uri);
         }
@@ -42,7 +45,7 @@ namespace Services
             {
                 try
                 {
-                    weatherService.Create(JsonSerializer.Deserialize<WeatherResponse>(GetWeatherData(uri).Result););
+                    weatherService.Create(JsonSerializer.Deserialize<WeatherResponse>(GetWeatherData(uri).Result));
                 }
                 catch (Exception e)
                 {
