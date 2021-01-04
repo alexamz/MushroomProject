@@ -1,16 +1,19 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Text.Json.Serialization;
 
-namespace Domain
+namespace Services.Messages
 {
-    public class ApiResponse
+    public class WeatherResponse
     {
+        [BsonId]
+        public ObjectId Id { get; set; }
+        public string User { get; set; }
         [JsonPropertyName("coord")]
         public Coord Coord { get; set; }
         [JsonPropertyName("weather")]
         public Weather[] Weather { get; set; }
-        [JsonPropertyName("base")]
-        public string Base { get; set; }
         [JsonPropertyName("main")]
         public Main Main { get; set; }
         [JsonPropertyName("visibility")]
@@ -27,34 +30,28 @@ namespace Domain
         public int Dt { get; set; }
         [JsonPropertyName("sys")]
         public Sys Sys { get; set; }
-        [JsonPropertyName("timezone")]
-        public int Timezone { get; set; }
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
         [JsonPropertyName("name")]
         public string Name { get; set; }
-        [JsonPropertyName("cod")]
-        public int Cod { get; set; }
     }
 
     public class Coord
     {
         [JsonPropertyName("lon")]
-        public float Lon { get; set; }
+        public decimal Lon { get; set; }
         [JsonPropertyName("lat")]
-        public float Lat { get; set; }
+        public decimal Lat { get; set; }
     }
 
     public class Main
     {
         [JsonPropertyName("temp")]
-        public float Temp { get; set; }
+        public decimal Temp { get; set; }
         [JsonPropertyName("feels_like")]
-        public float Feels_like { get; set; }
+        public decimal Feels_like { get; set; }
         [JsonPropertyName("temp_min")]
-        public float Temp_min { get; set; }
+        public decimal Temp_min { get; set; }
         [JsonPropertyName("temp_max")]
-        public float Temp_max { get; set; }
+        public decimal Temp_max { get; set; }
         [JsonPropertyName("pressure")]
         public int Pressure { get; set; }
         [JsonPropertyName("humidity")]
@@ -64,9 +61,12 @@ namespace Domain
     public class Wind
     {
         [JsonPropertyName("speed")]
-        public float Speed { get; set; }
+        public decimal Speed { get; set; }
         [JsonPropertyName("deg")]
         public int Deg { get; set; }
+        [JsonPropertyName("gust")]
+        public int Gust { get; set; }
+
     }
 
     public class Clouds
@@ -90,20 +90,16 @@ namespace Domain
         public int ThreeHours { get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class Sys
     {
-        [JsonPropertyName("type")]
-        public int Type { get; set; }
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
-        [JsonPropertyName("country")]
-        public string Country { get; set; }
         [JsonPropertyName("sunrise")]
         public int Sunrise { get; set; }
         [JsonPropertyName("sunset")]
         public int Sunset { get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class Weather
     {
         [JsonPropertyName("id")]

@@ -1,9 +1,3 @@
 {
-  "dependencies": {
-    "mssql1": {
-      "type": "mssql.azure",
-      "connectionId": "mushroomproject",
-      "secretStore": "AzureAppSettings"
-    }
-  }
+  "dependencies": {}
 }

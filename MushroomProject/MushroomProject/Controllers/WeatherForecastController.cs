@@ -1,39 +1,75 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
+using Services;
+using Services.Database;
+using Services.Messages;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace MushroomProject.Controllers
+namespace WeathersApi.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class WeatherController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        private readonly WeatherService weatherService;
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherController(WeatherService weatherService)
         {
-            _logger = logger;
+            this.weatherService = weatherService;
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public ActionResult<List<WeatherResponse>> Get() =>
+            weatherService.Get();
+
+        [HttpGet("{id:length(24)}", Name = "GetWeather")]
+        public ActionResult<WeatherResponse> Get(string id)
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            var weather = weatherService.Get(id);
+
+            if (weather == null)
             {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+                return NotFound();
+            }
+
+            return weather;
+        }
+
+        [HttpPost]
+        public ActionResult<WeatherResponse> Create(WeatherResponse weather)
+        {
+            weatherService.Create(weather);
+
+            return CreatedAtRoute("GetWeather", new { id = weather.Id.ToString() }, weather);
+        }
+
+        [HttpPut("{id:length(24)}")]
+        public IActionResult Update(string id, WeatherResponse weatherIn)
+        {
+            var weather = weatherService.Get(id);
+
+            if (weather == null)
+            {
+                return NotFound();
+            }
+
+            weatherService.Update(id, weatherIn);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id:length(24)}")]
+        public IActionResult Delete(string id)
+        {
+            var weather = weatherService.Get(id);
+
+            if (weather == null)
+            {
+                return NotFound();
+            }
+
+            weatherService.Remove(weather.Id.ToString());
+
+            return NoContent();
         }
     }
 }

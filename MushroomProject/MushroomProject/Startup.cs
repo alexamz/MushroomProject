@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Services;
+using Services.Database;
 
 namespace MushroomProject
 {
@@ -21,6 +23,15 @@ namespace MushroomProject
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // requires using Microsoft.Extensions.Options
+            //services.Configure<MushroomsDatabaseSettings>(
+            //Configuration.GetSection("MushroomsDatabaseSettings"));
+
+            //services.AddSingleton<IMushroomsDatabaseSettings>(sp =>
+            //sp.GetRequiredService<IOptions<MushroomsDatabaseSettings>>().Value);
+
+            services.AddSingleton<WeatherService>();
+
             services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

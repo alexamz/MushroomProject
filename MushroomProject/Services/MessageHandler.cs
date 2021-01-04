@@ -1,4 +1,7 @@
-﻿using Domain;
+﻿using MongoDB.Bson.Serialization;
+using Services;
+using Services.Database;
+using Services.Messages;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +16,13 @@ namespace Services
     public class MessageHandler : IMessageHandler
     {
         private CancellationToken cancellationToken;
+        private readonly WeatherService weatherService;
+
+        public MessageHandler(WeatherService weatherService)
+        {
+            this.weatherService = weatherService;
+        }
+
         public async Task StartAsync(CancellationToken stoppingToken)
         {
             this.cancellationToken = stoppingToken;
@@ -28,23 +38,37 @@ namespace Services
         private async Task GetDataPeriodicallyAsync(string uri)
         {
             const int minutes = 60;
-            List<string> data = new List<string>();
             while (!cancellationToken.IsCancellationRequested)
             {
-                data.Add(GetWeatherData(uri).Result);
+                try
+                {
+                    weatherService.Create(JsonSerializer.Deserialize<WeatherResponse>(GetWeatherData(uri).Result););
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
                 await Task.Delay(TimeSpan.FromMinutes(minutes), cancellationToken);
             }
         }
 
-        public async Task<string> GetWeatherData(string uri)
+        private static async Task<string> GetWeatherData(string uri)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            try
+            {
+                using HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                using Stream stream = response.GetResponseStream();
+                using StreamReader reader = new StreamReader(stream);
+                return await reader.ReadToEndAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
 
-            using HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            using Stream stream = response.GetResponseStream();
-            using StreamReader reader = new StreamReader(stream);
-            return await reader.ReadToEndAsync();
+            return null;
         }
     }
 }
