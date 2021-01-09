@@ -65,7 +65,7 @@ namespace Services.Messages
         [JsonPropertyName("deg")]
         public int Deg { get; set; }
         [JsonPropertyName("gust")]
-        public int Gust { get; set; }
+        public decimal Gust { get; set; }
 
     }
 
@@ -77,17 +77,17 @@ namespace Services.Messages
     public class Rain
     {
         [JsonPropertyName("1h")]
-        public int OneHour { get; set; }
+        public decimal OneHour { get; set; }
         [JsonPropertyName("3h")]
-        public int ThreeHours { get; set; }
+        public decimal ThreeHours { get; set; }
     }
 
     public class Snow
     {
         [JsonPropertyName("1h")]
-        public int OneHour { get; set; }
+        public decimal OneHour { get; set; }
         [JsonPropertyName("3h")]
-        public int ThreeHours { get; set; }
+        public decimal ThreeHours { get; set; }
     }
 
     [BsonIgnoreExtraElements]

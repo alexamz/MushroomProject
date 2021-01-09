@@ -33,7 +33,7 @@ namespace Services
         public async Task StartAsync(CancellationToken stoppingToken)
         {
             this.cancellationToken = stoppingToken;
-            string uri = $@"https://api.openweathermap.org/data/2.5/weather?lat=41.609935&lon=2.029882&lang=es&appid={settings.OpenWeatherMap.ApiKey}";
+            string uri = $@"https://api.openweathermap.org/data/2.5/weather?lat=41.609935&lon=2.029882&lang=es&units=metric&appid={settings.OpenWeatherMap.ApiKey}";
 
             await GetDataPeriodicallyAsync(uri);
         }
