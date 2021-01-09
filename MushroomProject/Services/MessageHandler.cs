@@ -52,10 +52,13 @@ namespace Services
                     Stopwatch sw = Stopwatch.StartNew();
                     var json = GetWeatherData(uri).Result;
                     logger.LogDebug($"Getting data from OpenWeatherMap took {sw.ElapsedMilliseconds}");
+                    logger.LogTrace($"Getting data from OpenWeatherMap took {sw.ElapsedMilliseconds}");
                     logger.LogDebug(json);
+                    logger.LogTrace(json);
                     sw.Restart();
                     weatherService.Create(JsonSerializer.Deserialize<WeatherResponse>(json));
                     logger.LogDebug($"Storing in mongodb took {sw.ElapsedMilliseconds}");
+                    logger.LogTrace($"Storing in mongodb took {sw.ElapsedMilliseconds}");
                 }
                 catch (Exception e)
                 {
