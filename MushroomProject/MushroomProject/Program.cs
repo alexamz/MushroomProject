@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NLog;
-using NLog.Extensions.Logging;
 using System;
 using System.IO;
 
@@ -14,26 +12,24 @@ namespace MushroomProject
         public static void Main(string[] args)
         {
             FixCurrentDirectory();
+            var host = CreateHostBuilder(args).Build();
+            var logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-            var logger = LogManager.LoadConfiguration("NLog.xml").GetCurrentClassLogger();
             int exitCode = 0;
-
             try
             {
-                logger.Info("Starting Weather Tracker...");
-                CreateHostBuilder(args).Build().Run();
+                logger.LogInformation("Starting Weather Tracker...");
+                host.Run();
             }
             catch (Exception e)
             {
-                logger.Error(e, "Weather Tracker stopped due to an exception");
+                logger.LogError(e, "Weather Tracker stopped due to an exception");
                 exitCode = -1;
                 throw;
             }
             finally
             {
-                logger.Info("Weather Tracker...");
-                LogManager.Flush();
-                LogManager.Shutdown();
+                logger.LogInformation("Weather Tracker...");
             }
 
             Environment.Exit(exitCode);
@@ -44,7 +40,7 @@ namespace MushroomProject
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
-                    logging.AddNLog();
+                    logging.AddConsole();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

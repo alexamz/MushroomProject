@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging.AzureAppServices;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Services;
 using Services.Database;
@@ -23,12 +25,7 @@ namespace MushroomProject
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // requires using Microsoft.Extensions.Options
-            //services.Configure<MushroomsDatabaseSettings>(
-            //Configuration.GetSection("MushroomsDatabaseSettings"));
-
-            //services.AddSingleton<IMushroomsDatabaseSettings>(sp =>
-            //sp.GetRequiredService<IOptions<MushroomsDatabaseSettings>>().Value);
+            services.Configure<AzureFileLoggerOptions>(Configuration.GetSection("AzureLogging"));
 
             services.AddSingleton<WeatherService>();
 
